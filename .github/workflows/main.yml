@@ -1,0 +1,44 @@
+# .github/workflows/main.yml
+name: Deploy Serverless Service
+
+on:
+  push:
+    branches:
+      - master  # Change this to your main branch if not 'master'
+      - dev
+      - stag
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js Environment
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14.x'  # Use the same version as specified in serverless.yml
+
+    - name: Install Dependencies
+      run: npm install  # or use yarn
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1  # Change this to your AWS region
+
+    - name: Deploy to Dev
+      if: github.ref == 'refs/heads/dev'
+      run: sls deploy --stage dev
+
+    - name: Deploy to Staging
+      if: github.ref == 'refs/heads/stag'
+      run: sls deploy --stage stag
+
+    - name: Deploy to Production
+      if: github.ref == 'refs/heads/master'
+      run: sls deploy --stage prod
