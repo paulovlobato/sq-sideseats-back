@@ -16,7 +16,11 @@ provider:
 
 functions:
   hello:
-    handler: handler.hello # This should match the file and exported function of your hello function
+    events:  # <-- Add this block
+        - http:
+            path: hello
+            method: get
+    handler: src/functions/hello/handler.main # This should match the file and exported function of your hello function
 
 package:
   individually: true
