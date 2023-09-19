@@ -42,7 +42,7 @@ jobs:
     needs: deploy-dev
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.stageName == 'stag'
     environment:
-      name: Staging
+      name: stag
       url: ${{ env.AWS_REGION }} # Add your staging environment URL here if available
     steps:
       - name: Checkout code
@@ -69,7 +69,7 @@ jobs:
     needs: deploy-stag
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.stageName == 'prod'
     environment:
-      name: Production
+      name: prod
       url: ${{ env.AWS_REGION }} # Add your production environment URL here if available
     steps:
       - name: Checkout code
