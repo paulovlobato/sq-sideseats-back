@@ -17,6 +17,8 @@ jobs:
   deploy-dev:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    with:
+      environment-name: dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -41,6 +43,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy-dev
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.stageName == 'stag'
+    with:
+      environment-name: stag
     environment:
       name: stag
       url: ${{ env.AWS_REGION }} # Add your staging environment URL here if available
@@ -68,6 +72,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy-stag
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.stageName == 'prod'
+    with:
+      environment-name: prod
     environment:
       name: prod
       url: ${{ env.AWS_REGION }} # Add your production environment URL here if available
