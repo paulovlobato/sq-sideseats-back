@@ -15,6 +15,14 @@ jobs:
     secrets: inherit
     with:
       environment-name: dev
+  
+  staging:
+    uses: ./.github/workflows/deploy.yml
+    needs: [ dev ]
+    with:
+      environment-name: staging
+      aws-region: us-east-1
+    secrets: inherit
 
 # jobs:
 #   deploy-dev:
