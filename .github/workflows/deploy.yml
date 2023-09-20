@@ -1,0 +1,38 @@
+name: Build and deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment-name:
+        type: string
+        default: dev
+      aws-region:
+        type: string
+        default: us-east-1
+
+jobs:
+  Build:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment-name }}
+    env:
+      ENVIRONMENT: ${{ inputs.environment-name == 'production' && 'prod' || inputs.environment-name }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install Serverless CLI
+        run: yarn global add serverless
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-region: ${{ inputs.aws-region }}
+          aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      - name: Deploy
+        run: yarn serverless deploy --stage=$ENVIRONMENT
